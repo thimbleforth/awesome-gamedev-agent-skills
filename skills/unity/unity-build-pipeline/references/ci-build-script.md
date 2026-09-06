@@ -88,8 +88,11 @@ Unity -batchmode -nographics \
 - Pipe `-logFile -` to stdout so the CI captures the Unity log.
 - `EditorApplication.Exit(code)` inside the method is the reliable way to set the exit code;
   `-quit` alone returns 0 even after a logged error.
-- Activate the Unity license in batch mode (`-username`/`-password`/`-serial` or a license
-  file) as a separate step before building on a clean runner.
+- **AI security gate:** return control to the user and ask them to activate the Unity license
+  themselves, outside the AI session. Never ask for or accept Unity username, password, serial,
+  license files, or activation tokens in chat, command arguments, logs, or generated files.
+  Prefer a user-provisioned license file or secret-backed activation on an isolated clean runner;
+  redact logs and verify credentials cannot appear in process listings.
 
 ## Addressables content build (when used)
 

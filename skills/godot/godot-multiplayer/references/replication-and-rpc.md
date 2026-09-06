@@ -72,6 +72,12 @@ per-node authority so each player's synchronizer pushes that player's state.
 
 Protect RPCs from unauthenticated peers using the built-in handshake:
 
+Before mounting a peer, require authenticated encrypted transport (or an equivalent independently
+verified channel), short-lived challenge-response credentials, server-side validation, token
+binding to the peer/session, freshness checks, and replay protection. Do not send reusable bearer
+tokens over an unauthenticated or merely obfuscated transport. Reject malformed, expired, reused,
+or incorrectly bound credentials and rate-limit failed handshakes.
+
 ```gdscript
 # Server, after assigning the peer:
 multiplayer.auth_timeout = 3.0

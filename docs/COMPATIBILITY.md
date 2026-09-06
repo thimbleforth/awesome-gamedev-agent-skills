@@ -16,7 +16,7 @@ For step-by-step install commands, see [`INSTALLATION.md`](INSTALLATION.md).
 - **It's broadly supported.** Claude Code, Claude, Cursor, Windsurf, Cline, OpenAI Codex, Gemini
   CLI, GitHub Copilot, Kiro, Antigravity, VS Code, Roo Code, Junie, Trae, Factory, Tabnine, OpenCode, Goose and
   [many others](https://agentskills.io/clients) load the standard directly.
-- **One installer covers all of them.** `npx skills add gamedev-skills/awesome-gamedev-agent-skills`
+- **One installer covers all of them.** `npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit>`
   detects the agents you have installed and copies the skills (router included) to the right place.
 - **The skills here use only the portable core**, so a single tree works in every agent — no
   per-tool variants.
@@ -24,17 +24,19 @@ For step-by-step install commands, see [`INSTALLATION.md`](INSTALLATION.md).
 ## Install in one line
 
 The [`skills` CLI](https://www.npmjs.com/package/skills) is the package manager for the Agent
-Skills ecosystem. It auto-detects your agent(s) and writes skills to each one's directory:
+Skills ecosystem. Use it only for project-local installs from a reviewed commit or tag; do not
+use global installation or automatic updates. Review the resolved files first and use a trusted
+npm mirror:
 
 ```bash
-# install the router + all 68 skills into whatever agent(s) you have
-npx skills add gamedev-skills/awesome-gamedev-agent-skills
+# install a reviewed commit into the current project
+npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit>
 
 # preview without installing
-npx skills add gamedev-skills/awesome-gamedev-agent-skills --list
+npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit> --list
 
-# target a specific agent, and/or install globally for every project
-npx skills add gamedev-skills/awesome-gamedev-agent-skills -a cursor -g
+# target a specific agent; do not add -g
+npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit> -a cursor
 ```
 
 This repo ships a Claude marketplace manifest. The master [`router/`](../router) skill is
@@ -44,7 +46,7 @@ standard `.agents/skills/` layout and universal installer.
 
 ## Where each agent looks for skills
 
-Skills install per-project (committed with your repo) or globally (every project). Paths can change
+Skills should install per-project (committed with your repo), not globally (every project). Paths can change
 as tools evolve, so the `skills` CLI is the most reliable installer; the table below lists the
 documented project locations and how each agent triggers a skill. Each row links to that agent's
 own skills documentation.
@@ -95,7 +97,7 @@ optional fields other repositories may choose to use.
 
 ## Verify after installing
 
-1. List installed skills — `npx skills list`, or `/skills` inside agents that expose it.
+1. List installed skills — `npx skills list` (without updating), or `/skills` inside agents that expose it.
 2. Ask a prompt that should route — e.g. *"set up a tilemap with autotiling in Godot"* — and
    confirm the router loads the matching skill(s) before it edits code.
 

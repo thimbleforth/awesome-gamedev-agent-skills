@@ -40,7 +40,9 @@ and their own counsel.
    `tools/ContentBuilder/`.
 
 > Security note: never commit account passwords or the `config.vdf` login token to the repo.
-> See the CI/CD section in the reference for the supported token workflow.
+> **AI security gate:** return control to the user here and ask them to enter credentials
+> themselves outside the AI session. Never request, receive, store, print, or execute a command
+> containing a password, token, Guard code, or `config.vdf` contents.
 
 ## Core workflow
 
@@ -58,21 +60,30 @@ and their own counsel.
    trailers, system requirements. When complete, click **Mark as ready for review**. Store
    review takes ~3-5 business days; submit at least **7 days** before you want it live. It
    must be in **Coming Soon** for at least **2 weeks** before release.
-3. **Create your build scripts.** Start with the simple app-build `.vdf` in Patterns below;
+3. **Create a clean staging directory.** Copy only the intended release files into a fresh,
+   isolated staging directory. Run a secret scanner before building and stop on any finding.
+   Never build directly from a working tree or a directory containing credentials, source,
+   debug artifacts, or local configuration.
+4. **Create your build scripts.** Start with the simple app-build `.vdf` in Patterns below;
    for multi-depot/multi-platform apps use depot scripts (see the reference). The script maps
    local files into depots and names where build output/logs go.
-4. **Bootstrap steamcmd and upload.** Run `steamcmd` once to self-update, then run the build
-   (Patterns). steamcmd chunks files (~1 MB), uploads only changed chunks, and registers a
+5. **Build and inspect before upload.** Run the build in preview/dry-run mode, inspect the
+   generated manifest and logs with the user, and obtain explicit user acceptance before any
+   upload. Confirm the manifest contains only approved files.
+6. **Bootstrap steamcmd and upload.** The user must provide credentials outside the AI session
+   using the approved token/secret mechanism; the AI must not perform credential entry. Run
+   `steamcmd` once to self-update, then run the accepted build (Patterns). steamcmd chunks files
+   (~1 MB), uploads only changed chunks, and registers a
    global **BuildID**.
-5. **Set the build live on a branch.** Go to `https://partner.steamgames.com/apps/builds/<AppID>`,
+7. **Set the build live on a branch.** Go to `https://partner.steamgames.com/apps/builds/<AppID>`,
    pick the build, **Preview Change**, then **Set Build Live Now** for a branch. Test on a
    beta branch first (see `references/steampipe-build-scripts.md` for branch setup).
-6. **Run the Game Build checklist** and **Mark as ready for review** (store presence must be
+8. **Run the Game Build checklist** and **Mark as ready for review** (store presence must be
    submitted *before* the build review). Both tracks must be approved.
-7. **Release manually.** When approved and Coming Soon has run its time, use the green
+9. **Release manually.** When approved and Coming Soon has run its time, use the green
    **Release App** button → **Publish Now** → **Release Now**. Approved titles do **not**
    release themselves.
-8. **Update later** by uploading a new build and setting it live on `default` (manually) or
+10. **Update later** by uploading a new build and setting it live on `default` (manually) or
    shipping to a beta branch first. See `references/steampipe-build-scripts.md`.
 
 ## Patterns
@@ -84,7 +95,7 @@ tools/ContentBuilder/
   builder/         steamcmd.exe (Windows)   <- run once to bootstrap
   builder_linux/   steamcmd (Linux)
   builder_osx/     steamcmd (macOS)
-  content/         <- your final, runnable build goes here (the files players get)
+  content/         <- clean, secret-scanned staging output only
   output/          build logs + chunk cache (safe to delete; speeds up re-uploads)
   scripts/         <- your *.vdf build scripts live here
 ```
@@ -92,7 +103,7 @@ tools/ContentBuilder/
 ### 2. Minimal app build script — `app_build_1000.vdf`
 
 ```text
-// AppID 1000 with one depot (1001): upload everything under ../content recursively.
+// AppID 1000 with one depot (1001): upload only the reviewed staging output.
 // VDF is Valve KeyValues: "key" "value", braces for nesting. Adjust IDs to your app.
 "AppBuild"
 {
@@ -120,9 +131,9 @@ tools/ContentBuilder/
 ### 3. Upload the build (Windows; substitute the platform builder elsewhere)
 
 ```bat
-REM Run from the SDK. Bootstrap once, then build. Use a build account, not your admin login.
+REM The user enters credentials outside the AI session; never put them in this command.
 tools\ContentBuilder\builder\steamcmd.exe ^
-  +login <build_account> <password> ^
+  +login <build_account> ^
   +run_app_build ..\scripts\app_build_1000.vdf ^
   +quit
 ```
@@ -159,6 +170,10 @@ BuildID. The build is NOT live yet; set it live per the workflow above.
   `ContentRoot`/`LocalPath` points at the wrong (empty) path.
 - **Committing the login token.** The `config.vdf` Steam Guard token and account password are
   secrets. Keep them out of the repo; use the CI workflow in the reference.
+- **Credentials and AI sessions.** Return control to the user for credential entry outside the AI
+  session. Do not ask the user to paste credentials into chat or execute a command containing them.
+- **Unreviewed uploads.** A build must come from a fresh staging directory, pass secret scanning,
+  produce a preview manifest, and receive explicit user acceptance before upload.
 - **Released-app safety delay.** Changing the build account's email/phone forces a **3-day**
   wait before you can set a build live for a *released* app — don't reconfigure the account
   right before launch.
