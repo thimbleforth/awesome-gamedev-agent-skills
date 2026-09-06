@@ -94,8 +94,10 @@ python scripts/build_preview_sheet.py output/player/*.png \
 ```
 
 Run script paths relative to this skill directory, or resolve the installed skill path first.
-Both scripts require Python 3.10+ and Pillow. Install the only dependency with
-`python -m pip install -r scripts/requirements.txt` when it is not already available.
+Both scripts require Python 3.10+ and the repository-approved Pillow version. Install only from
+the pinned requirements/lock file, with hashes and a trusted package mirror, inside a disposable
+sandbox or isolated virtual environment. Do not install latest versions, use an untrusted index,
+or process untrusted images outside the sandbox.
 
 ## Quality gates
 

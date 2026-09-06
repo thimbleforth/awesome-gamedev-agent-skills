@@ -1,0 +1,4 @@
+# Repository-approved artifacts; update deliberately with reviewed hashes.
+Pillow==10.4.0 \
+    --hash=sha256:166c1cd4d24309b30d61f79f4a9114b7b2313d7450912277855ff5dfd7cd4a06 \
+    --hash=sha256:86dcb5a1eb778d8b25659d5e4341269e8590ad6b4e8b44d9f4b07f8d136c414a

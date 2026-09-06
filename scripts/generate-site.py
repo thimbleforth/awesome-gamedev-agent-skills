@@ -28,7 +28,7 @@ DEFAULT_OUT = REPO_ROOT / "_site"
 DEFAULT_BASE_URL = "https://gamedev-skills.github.io/awesome-gamedev-agent-skills"
 REPO_SLUG = "gamedev-skills/awesome-gamedev-agent-skills"
 GITHUB_BLOB = f"https://github.com/{REPO_SLUG}/blob/main"
-INSTALL_CMD = f"npx skills add {REPO_SLUG}"
+INSTALL_CMD = f"npx skills add {REPO_SLUG}@<reviewed-commit>"
 
 MAX_META_DESCRIPTION = 155
 

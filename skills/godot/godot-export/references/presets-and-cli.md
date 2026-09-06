@@ -88,7 +88,12 @@ Export extra content as a separate `.pck` and load it at runtime:
 var ok := ProjectSettings.load_resource_pack("user://dlc1.pck")  # mounts into res://
 ```
 
-A patch pack can override or add files. Use `--export-pack` to produce packs in CI.
+A patch pack can override or add files. **Before mounting, require a user-visible validation
+response that records the pack's approved version, expected hash, and verified digital signature.**
+Verify the signature with a trusted public key, compare the hash and version against an allowlist,
+enforce the expected compatibility and expiry metadata, and reject the pack on any failure or
+unknown signer. Never mount arbitrary downloaded or user-provided packs over executable content.
+Use `--export-pack` to produce packs in CI.
 
 ## Encryption
 

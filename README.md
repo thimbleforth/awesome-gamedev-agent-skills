@@ -39,15 +39,17 @@ task skills before it writes code.
 
 ## Quick start
 
-**One command, any agent.** The [`skills`](https://www.npmjs.com/package/skills) CLI detects the
-coding agent you already use and installs the router plus all 68 skills into the right place:
+**One project-local command, any agent.** The [`skills`](https://www.npmjs.com/package/skills) CLI
+detects the coding agent you already use and installs a user-reviewed commit of the router plus
+skills into the current project:
 
 ```bash
-npx skills add gamedev-skills/awesome-gamedev-agent-skills
+npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit>
 ```
 
-Add `--list` to preview first, `-g` to install for every project, or `-a <agent>` to target a
-specific tool (`-a cursor`, `-a claude-code`, `-a gemini-cli`, …). The same `SKILL.md` files load
+Add `--list` to preview first, or `-a <agent>` to target a specific tool (`-a cursor`,
+`-a claude-code`, `-a gemini-cli`, …). Do not use `-g`; review and deliberately select a new
+commit when updating. The same `SKILL.md` files load
 natively in Claude Code, Cursor, Windsurf, Cline, Codex, Gemini CLI, GitHub Copilot, Kiro, and
 [dozens more](docs/COMPATIBILITY.md) — there's nothing to convert.
 
@@ -249,7 +251,7 @@ and nothing to convert.
 right place:
 
 ```bash
-npx skills add gamedev-skills/awesome-gamedev-agent-skills
+npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit>
 ```
 
 **Or copy by hand.** Drop a skill's `<name>/` folder into your agent's skills directory:

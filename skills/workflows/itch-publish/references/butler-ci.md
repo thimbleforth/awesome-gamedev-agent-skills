@@ -6,6 +6,11 @@ set, and notifying players of updates. Verify against the primary docs:
 
 ## 1. Authentication for CI (`BUTLER_API_KEY`)
 
+> **AI security gate — call this out before proceeding:** This workflow downloads and executes a
+> publishing binary and exposes `BUTLER_API_KEY`. Do not continue or generate a runnable workflow
+> until the user confirms an exact Butler version, a trusted checksum/signature, and an isolated
+> protected release environment. Never accept a mutable `LATEST` artifact.
+
 Interactive `butler login` opens a browser — useless in CI. Instead, set the
 **`BUTLER_API_KEY`** environment variable and butler uses it automatically.
 
@@ -20,15 +25,19 @@ Where to get the key:
 Store it as a CI secret. **Never** print it; a key leaked into a public build log is
 compromised — revoke it immediately on the API keys page.
 
-## 2. Installing butler in CI (use `broth`, not the page link)
+## 2. Installing butler in CI (pinned and verified only)
 
-The `itchio.itch.io/butler` download links **expire**, so they can't be hard-coded. Use the
-permanent **broth** URLs, which always serve the latest stable build of a channel:
+Do not use a mutable `LATEST` URL. The user must choose and review an exact vendor release and
+record its SHA-256 checksum or vendor signature in the repository's release configuration before
+the AI writes or runs this step. Fetch through a trusted mirror where possible, verify the
+checksum/signature before extraction, and stop if verification fails:
 
 ```bash
-# Example: latest stable Linux amd64 butler. Substitute the channel for your runner OS.
-curl -L -o butler.zip "https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default"
-unzip butler.zip
+# Example only: replace VERSION and SHA256 with user-approved values.
+curl --fail --location --output butler.zip \
+  "https://broth.itch.zone/butler/linux-amd64/VERSION/archive/default"
+echo "SHA256  butler.zip" | sha256sum --check -
+unzip -q butler.zip
 chmod +x butler
 ./butler -V        # prints version; confirms it runs
 ```
@@ -54,8 +63,9 @@ jobs:
       # ... your build steps produce ./build/windows, ./build/linux, etc. ...
       - name: Install butler
         run: |
-          curl -L -o butler.zip "https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default"
-          unzip butler.zip && chmod +x butler
+          curl --fail --location --output butler.zip "$BUTLER_DOWNLOAD_URL"
+          echo "$BUTLER_SHA256  butler.zip" | sha256sum --check -
+          unzip -q butler.zip && chmod +x butler
       - name: Push builds
         run: |
           VERSION="${GITHUB_REF_NAME#v}"     # tag v1.2.0 -> 1.2.0

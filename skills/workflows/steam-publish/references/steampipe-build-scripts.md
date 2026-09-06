@@ -70,11 +70,11 @@ Notes:
 ## 2. Running builds (per platform)
 
 ```bash
-# Windows
-tools\ContentBuilder\builder\steamcmd.exe +login <account> <password> +run_app_build ..\scripts\app_build_1000.vdf +quit
+# Windows — user supplies credentials outside the AI session; never place them in arguments.
+tools\ContentBuilder\builder\steamcmd.exe +login <account> +run_app_build ..\scripts\app_build_1000.vdf +quit
 
 # Linux / macOS (bootstrap once, then build)
-./tools/ContentBuilder/builder_linux/steamcmd.sh +login <account> <password> +run_app_build ../scripts/app_build_1000.vdf +quit
+./tools/ContentBuilder/builder_linux/steamcmd.sh +login <account> +run_app_build ../scripts/app_build_1000.vdf +quit
 ```
 
 macOS first-run bootstrap: `cd tools/ContentBuilder/builder_osx`, `chmod +x steamcmd`,
@@ -100,7 +100,9 @@ build to default manually when you're confident.
 steamcmd stores a login token in `config.vdf` after a successful interactive login with Steam
 Guard. CI reuses that token instead of a password.
 
-1. On the build machine (or once locally), run `steamcmd +login <username>`, enter the
+1. **AI security gate:** return control to the user to enter credentials on the build machine,
+   outside the AI session. Never request or receive the password, Guard code, or token.
+   On the build machine (or once locally), run `steamcmd +login <username>`, enter the
    password and the Steam Guard code, type `info` to confirm "connected", then `quit`.
 2. **Preserve `<Steam>/config/config.vdf` between CI runs** (cache it as a secret artifact).
    This file holds the refreshed login token.

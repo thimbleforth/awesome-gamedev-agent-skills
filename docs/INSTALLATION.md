@@ -29,24 +29,25 @@ is the dispatcher). Copy it in alongside the others so the agent can route reque
 ## Universal installer (any agent)
 
 The [`skills` CLI](https://www.npmjs.com/package/skills) is the package manager for the Agent
-Skills ecosystem. It detects the agents installed on your machine and copies the skills (the
-router plus all 68) into each one's skills directory — no clone required:
+Skills ecosystem. Prefer project-local installation only. Before using `npx`, pin the repository
+to a reviewed commit or tag, inspect the resolved package, and use a trusted npm mirror. Do not
+use global installation, automatic updates, or an unreviewed remote ref:
 
 ```bash
-# install into whatever agent(s) you have
-npx skills add gamedev-skills/awesome-gamedev-agent-skills
+# install a reviewed commit into the current project only
+npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit> -a cursor
 
 # preview the skill list without installing anything
-npx skills add gamedev-skills/awesome-gamedev-agent-skills --list
+npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit> --list
 
 # target one agent · install globally for all projects · grab a subset
-npx skills add gamedev-skills/awesome-gamedev-agent-skills -a cursor
-npx skills add gamedev-skills/awesome-gamedev-agent-skills -g
-npx skills add gamedev-skills/awesome-gamedev-agent-skills --skill godot-tilemap --skill platformer
+npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit> -a cursor \
+  --skill godot-tilemap --skill platformer
 ```
 
-Companions: `npx skills list` (what's installed), `npx skills update` (pull latest), and
-`npx skills remove` (uninstall). This is the recommended path for Cursor, Windsurf, Cline, Codex,
+Companions: `npx skills list` (what's installed) and `npx skills remove` (uninstall). Deliberately
+review and reinstall a new pinned commit to update; do not run automatic updates. This is the
+recommended path for Cursor, Windsurf, Cline, Codex,
 Gemini CLI, GitHub Copilot, Kiro, and most other agents. The sections below cover each agent's
 native or manual route if you'd rather not use the CLI.
 
@@ -93,8 +94,9 @@ done
 cp -R router .claude/skills/router   # the dispatcher — install it too
 ```
 
-For all projects, copy into `~/.claude/skills/` instead. Claude Code auto-triggers a skill from
-its `description`; `/skills` opens an interactive menu.
+Avoid user-global `~/.claude/skills/` installation unless the user explicitly approves the
+expanded blast radius. Claude Code auto-triggers a skill from its `description`; `/skills` opens
+an interactive menu.
 
 ## Kiro
 
@@ -125,7 +127,7 @@ cp -R skills/godot/godot-tilemap .agents/skills/
 Gemini CLI and Codex can also be targeted by the universal CLI, no clone needed:
 
 ```bash
-npx skills add gamedev-skills/awesome-gamedev-agent-skills -a gemini-cli   # or: -a codex
+npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit> -a gemini-cli   # or: -a codex
 ```
 
 - **Gemini CLI:** manage and verify with `/skills`; activation prompts for consent.
@@ -144,7 +146,8 @@ options = ClaudeAgentOptions(
     cwd="/path/to/project",                 # contains .claude/skills/
     setting_sources=["user", "project"],    # REQUIRED, or no skills are discovered
     skills="all",                           # or ["godot-tilemap", ...]
-    allowed_tools=["Read", "Write", "Bash", "Skill"],
+    # Use a per-task allowlist; add Write/Bash only after explicit user approval.
+    allowed_tools=["Read", "Skill"],
 )
 ```
 
@@ -160,7 +163,7 @@ Upload the complete skill folder so bundled references, scripts, and assets rema
 ## Cursor / Windsurf / Cline (native skills)
 
 These editors read `SKILL.md` natively — there is no rule-file conversion. The simplest install is
-the universal CLI (`npx skills add gamedev-skills/awesome-gamedev-agent-skills -a cursor`; swap in
+the universal CLI (`npx skills add gamedev-skills/awesome-gamedev-agent-skills@<reviewed-commit> -a cursor`; swap in
 `windsurf` or `cline`). To place files by hand:
 
 ```bash
